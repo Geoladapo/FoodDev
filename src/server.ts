@@ -1,6 +1,7 @@
 import * as express from 'express';
 import * as mongoose from 'mongoose';
 import * as bodyParser from 'body-parser';
+import * as cors from 'cors';
 import { getEnvironmentVariable } from './environments/environment';
 import UserRouter from './routes/user.routes';
 
@@ -15,6 +16,7 @@ export class Server {
 
   setConfig() {
     this.connectMongoDb();
+    this.allowCors();
     this.configureBodyParser();
   }
   connectMongoDb() {
@@ -30,6 +32,10 @@ export class Server {
         extended: true,
       })
     );
+  }
+
+  allowCors() {
+    this.app.use(cors());
   }
   setRoutes() {
     this.app.use('/api/user', UserRouter);
