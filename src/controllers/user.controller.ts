@@ -2,7 +2,7 @@ import User from '../models/User';
 import { validationResult } from 'express-validator';
 
 export class UserController {
-  static signup(req, res, next) {
+  static async signup(req, res, next) {
     const errors = validationResult(req);
     const { name, phone, email, password, type, status } = req.body;
     if (!errors.isEmpty()) {
@@ -17,13 +17,11 @@ export class UserController {
       status,
     };
 
-    let user = new User(data);
-
-    user
-      .save()
-      .then((user) => res.send(user))
-      .catch((e) => {
-        next(e);
-      });
+    try {
+      let user = await new User(data);
+      res.send(user);
+    } catch (error) {
+      next(error);
+    }
   }
 }
