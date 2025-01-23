@@ -1,5 +1,4 @@
 import * as nodeMailer from 'nodemailer';
-import * as sendGrid from 'nodemailer-sendgrid-transport';
 import {getEnvironmentVariable} from '../environments/environment';
 
 export class NodeMailer {
