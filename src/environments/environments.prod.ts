@@ -2,4 +2,8 @@ import { Environment } from './environment';
 
 export const ProdEnvironment: Environment = {
   db_uri: '',
+  gmail_auth: {
+    user: '',
+    pass: '',
+  },
 };
