@@ -4,11 +4,13 @@ import {Utils} from '../utils/utils';
 
 export class UserController {
   static async signup(req, res, next) {
+    var verification_token = Utils.generateVerificationToken(6);
+
     const {name, phone, email, password, type, status} = req.body;
     const data = {
       name,
       email,
-      verification_token: Utils.generateVerificationToken(6),
+      verification_token,
       verification_token_time: Date.now() + new Utils().MAX_TOKEN_TIME,
       phone,
       password,
@@ -22,7 +24,7 @@ export class UserController {
       await NodeMailer.sendMail({
         to: [email],
         subject: 'test',
-        html: `<h1>Your Otp is ${Utils.generateVerificationToken(5)}</h1>`,
+        html: `<h1>Your Otp is ${verification_token}</h1>`,
       });
     } catch (error) {
       next(error);

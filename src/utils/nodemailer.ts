@@ -5,13 +5,11 @@ import {getEnvironmentVariable} from '../environments/environment';
 export class NodeMailer {
   private static initiateTransport() {
     return nodeMailer.createTransport({
-      service: 'gmail',
-      host: 'smtp.gmail.com',
-      port: 465,
-      secure: true,
+      host: 'sandbox.smtp.mailtrap.io',
+      port: 2525,
       auth: {
-        user: getEnvironmentVariable().gmail_auth.user,
-        pass: getEnvironmentVariable().gmail_auth.pass,
+        user: getEnvironmentVariable().mailtrap_auth.user,
+        pass: getEnvironmentVariable().mailtrap_auth.pass,
       },
     });
   }

@@ -1,8 +1,8 @@
-import { Environment } from './environment';
+import {Environment} from './environment';
 
 export const ProdEnvironment: Environment = {
   db_uri: '',
-  gmail_auth: {
+  mailtrap_auth: {
     user: '',
     pass: '',
   },

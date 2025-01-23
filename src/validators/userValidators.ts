@@ -11,7 +11,7 @@ export class UserValidator {
         .custom((email, {req}) => {
           return User.findOne({email: email, type: 'user'}).then((user) => {
             if (user) {
-              throw new Error('User already exists');
+              throw 'User already exists';
             } else {
               return true;
             }

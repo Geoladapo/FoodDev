@@ -1,10 +1,10 @@
-import { Environment } from './environment';
+import {Environment} from './environment';
 import 'dotenv/config';
 
 export const DevEnvironment: Environment = {
   db_uri: process.env.MONGO_CONNECT,
-  gmail_auth: {
-    user: 'foodDev',
-    pass: 'xgskfznpiqtnruft',
+  mailtrap_auth: {
+    user: '9fc234822decf2',
+    pass: 'c0d2fe2a6a14c6',
   },
 };

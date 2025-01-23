@@ -1,9 +1,9 @@
-import { DevEnvironment } from './environments.dev';
-import { ProdEnvironment } from './environments.prod';
+import {DevEnvironment} from './environments.dev';
+import {ProdEnvironment} from './environments.prod';
 
 export interface Environment {
   db_uri: string;
-  gmail_auth?: {
+  mailtrap_auth?: {
     user: string;
     pass: string;
   };
