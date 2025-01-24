@@ -1,4 +1,4 @@
-import {body} from 'express-validator';
+import {body, query} from 'express-validator';
 import User from '../models/User';
 
 export class UserValidator {
@@ -25,5 +25,9 @@ export class UserValidator {
 
   static verify() {
     return [body('verification_token', 'Email verification token is required').isNumeric(), body('email', 'Email is required').isEmail()];
+  }
+
+  static verifyUserForResendEmail() {
+    return [query('email', 'Email is required').isEmail()];
   }
 }

@@ -1,7 +1,7 @@
-import { Router } from 'express';
-import { UserController } from '../controllers/user.controller';
-import { UserValidator } from '../validators/userValidators';
-import { GlobalMiddleware } from '../middlewares/globalMiddleware';
+import {Router} from 'express';
+import {UserController} from '../controllers/user.controller';
+import {UserValidator} from '../validators/userValidators';
+import {GlobalMiddleware} from '../middlewares/globalMiddleware';
 
 class UserRouter {
   public router: Router;
@@ -15,22 +15,14 @@ class UserRouter {
     this.deleteRoutes();
   }
 
-  getRoutes() {}
+  getRoutes() {
+    this.router.get('/send-verification/email', UserValidator.verifyUserForResendEmail(), UserController.resendVerificationEmail);
+  }
   postRoutes() {
-    this.router.post(
-      '/signup',
-      UserValidator.signup(),
-      GlobalMiddleware.checkError,
-      UserController.signup
-    );
+    this.router.post('/signup', UserValidator.signup(), GlobalMiddleware.checkError, UserController.signup);
   }
   patchRoutes() {
-    this.router.patch(
-      '/verify',
-      UserValidator.verify(),
-      GlobalMiddleware.checkError,
-      UserController.verify
-    );
+    this.router.patch('/verify', UserValidator.verify(), GlobalMiddleware.checkError, UserController.verify);
   }
   putRoutes() {}
   deleteRoutes() {}
