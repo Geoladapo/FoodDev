@@ -2,33 +2,67 @@ import User from '../models/User';
 import {NodeMailer} from '../utils/nodemailer';
 import {Utils} from '../utils/utils';
 
+
 export class UserController {
+
   static async signup(req, res, next) {
     var verification_token = Utils.generateVerificationToken(6);
 
-    const {name, phone, email, password, type, status} = req.body;
-    const data = {
-      name,
-      email,
-      verification_token,
-      verification_token_time: Date.now() + new Utils().MAX_TOKEN_TIME,
-      phone,
-      password,
-      type,
-      status,
-    };
+    const {name, phone, password, email, type, status} = req.body;
+
+    const hash = await Utils.encryptPassword(password);
 
     try {
+
+      const data = {
+        name,
+        email,
+        verification_token,
+        verification_token_time: Date.now() + new Utils().MAX_TOKEN_TIME,
+        phone,
+        password: hash,
+        type,
+        status
+      };
+
       let user = await new User(data).save();
-      res.send(user);
+      const payload = {
+        user_id: user._id,
+        email: user.email
+      };
+      const token = Utils.jwtSign(payload);
+
+      res.json({token, user});
       await NodeMailer.sendMail({
         to: [user.email],
         subject: 'Email verification',
-        html: `<h1>Your Otp is ${verification_token}</h1>`,
+        html: `<h1>Your Otp is ${verification_token}</h1>`
       });
+
     } catch (error) {
       next(error);
     }
+  }
+
+  static async login(req, res, next) {
+    const user = req.user;
+    const {password} = req.query;
+    const data = {
+      password, encrypt_password: user.password
+    };
+    try {
+      await Utils.comparePassword(data);
+      const payload = {
+        user_id: user._id,
+        email: user.email
+      };
+      const token = Utils.jwtSign(payload);
+
+      res.json({token, user});
+    } catch (err) {
+      next(err);
+    }
+    res.send(req.user);
   }
 
   static async verify(req, res, next) {
@@ -38,10 +72,10 @@ export class UserController {
         {
           email: email,
           verification_token: verification_token,
-          verification_token_time: {$gt: Date.now()},
+          verification_token_time: {$gt: Date.now()}
         },
         {
-          email_verified: true,
+          email_verified: true
         },
         {new: true}
       );
@@ -62,18 +96,18 @@ export class UserController {
         {email: email},
         {
           verification_token: verification_token,
-          verification_token_time: Date.now() + new Utils().MAX_TOKEN_TIME,
+          verification_token_time: Date.now() + new Utils().MAX_TOKEN_TIME
         }
       );
       if (user) {
         await NodeMailer.sendMail({
           to: [user.email],
           subject: 'Resend Email verification',
-          html: `<h1>Your Otp is ${verification_token}</h1>`,
+          html: `<h1>Your Otp is ${verification_token}</h1>`
         });
         res.json({success: true});
       } else {
-        throw new Error("User doesn't exist");
+        throw new Error('User doesn\'t exist');
       }
     } catch (error) {
       next(error);

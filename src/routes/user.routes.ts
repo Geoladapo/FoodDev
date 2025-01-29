@@ -16,7 +16,8 @@ class UserRouter {
   }
 
   getRoutes() {
-    this.router.get('/send-verification/email', UserValidator.verifyUserForResendEmail(), UserController.resendVerificationEmail);
+    this.router.get('/send-verification/email', UserValidator.verifyUserForResendEmail(),GlobalMiddleware.checkError, UserController.resendVerificationEmail);
+    this.router.get('/login', UserValidator.login(), GlobalMiddleware.checkError, UserController.login);
   }
   postRoutes() {
     this.router.post('/signup', UserValidator.signup(), GlobalMiddleware.checkError, UserController.signup);

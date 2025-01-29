@@ -7,4 +7,5 @@ export const DevEnvironment: Environment = {
     user: '9fc234822decf2',
     pass: 'c0d2fe2a6a14c6',
   },
+  jwt_secret_key: process.env.secret_key_dev
 };

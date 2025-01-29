@@ -17,9 +17,34 @@ export class UserValidator {
             }
           });
         }),
-      body('password', 'Password is required').isAlphanumeric().isLength({min: 8, max: 25}).withMessage('Password must be between 8-20 characters'),
+      body('password', 'Password is required').isAlphanumeric().isLength({
+        min: 8,
+        max: 25
+      }).withMessage('Password must be between 8-20 characters'),
       body('type', 'User role type is required').isString(),
-      body('status', 'User status is required').isString(),
+      body('status', 'User status is required').isString()
+    ];
+  }
+
+
+  static login() {
+    return [
+      query('email', 'Email is required')
+        .isEmail()
+        .custom((email, {req}) => {
+          return User.findOne({email: email}).then((user) => {
+            if (user) {
+              req.user = user;
+              return true;
+            } else {
+              throw 'No user registered with such Email';
+            }
+          });
+        }),
+      query('password', 'Password is required').isAlphanumeric().isLength({
+        min: 8,
+        max: 25
+      }).withMessage('Password must be between 8-20 characters')
     ];
   }
 

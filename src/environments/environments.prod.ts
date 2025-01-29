@@ -6,4 +6,5 @@ export const ProdEnvironment: Environment = {
     user: '',
     pass: '',
   },
+  jwt_secret_key: ''
 };
