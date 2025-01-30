@@ -1,6 +1,4 @@
 import * as bcrypt from 'bcrypt';
-import * as jwt from 'jsonwebtoken';
-import {getEnvironmentVariable} from '../environments/environment';
 
 export class Utils {
   public MAX_TOKEN_TIME = 5 * 60 * 1000;
@@ -39,13 +37,4 @@ export class Utils {
       });
     });
   }
-
-    static jwtSign(payload){
-      jwt.sign(
-        payload,
-        getEnvironmentVariable().jwt_secret_key,
-        {expiresIn: '180d'}
-      );
-    }
-
 }
