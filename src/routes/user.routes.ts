@@ -18,6 +18,9 @@ class UserRouter {
   getRoutes() {
     this.router.get('/send-verification/email', GlobalMiddleware.auth, UserController.resendVerificationEmail);
     this.router.get('/login', UserValidator.login(), GlobalMiddleware.checkError, UserController.login);
+    this.router.get('/send-reset-password-token', UserValidator.checkResetPasswordEmail(), GlobalMiddleware.checkError, UserController.sendResetPasswordOTP);
+    this.router.get('/verify/reset-password', UserValidator.verifyResetPasswordToken(), GlobalMiddleware.checkError, UserController.verifyResetPasswordOTP);
+
   }
 
   postRoutes() {
@@ -25,7 +28,8 @@ class UserRouter {
   }
 
   patchRoutes() {
-    this.router.patch('/verify', UserValidator.verify(), GlobalMiddleware.checkError, GlobalMiddleware.auth, UserController.verify);
+    this.router.patch('/reset-password', UserValidator.resetPassword(), GlobalMiddleware.checkError, UserController.resetPassword);
+    this.router.patch('/verify', UserValidator.verify(), GlobalMiddleware.checkError, UserController.verify);
   }
 
   putRoutes() {

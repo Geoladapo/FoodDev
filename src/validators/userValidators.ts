@@ -52,5 +52,65 @@ export class UserValidator {
     return [body('verification_token', 'Email verification token is required').isNumeric()];
   }
 
+  static checkResetPasswordEmail() {
+    return [
+      query('email', 'Email is required')
+        .isEmail()
+        .custom((email, {req}) => {
+          return User.findOne({email: email}).then((user) => {
+            if (user) {
+              return true;
+            } else {
+              throw 'No user registered with such Email';
+            }
+          });
+        })
+    ];
+  }
 
+  static verifyResetPasswordToken() {
+    return [
+      query('email', 'Email is required').isEmail(),
+      query('reset_password_token', 'Reset password token is required').isNumeric()
+        .custom((reset_password_token, {req}) => {
+          return User.findOne(
+            {
+              email: req.query.email,
+              reset_password_token: reset_password_token,
+              reset_password_token_time: {$gt: Date.now()}
+            }
+          ).then((user) => {
+            if (user) {
+              return true;
+            } else {
+              throw new Error('Reset password token doesn\'t exist. Please regenerate a new Token');
+            }
+          });
+        })
+    ];
+  }
+
+  static resetPassword() {
+    return [
+      body('email', 'Email is required').isEmail()
+        .custom((email, {req}) => {
+          return User.findOne({email: req.query.email}).then((user) => {
+            if (user) {
+              return true;
+            } else {
+              throw new Error('No user registered with such Email');
+            }
+          });
+        }),
+      body('new_password', 'New Password is required'),
+      body('reset_password_token', 'Reset password token is required').isNumeric()
+        .custom((reset_password_token, {req}) => {
+          if (req.user.reset_password_token === reset_password_token) {
+            return true;
+          } else {
+            throw new Error('Reset password token is invalid. Please try again');
+          }
+        })
+    ];
+  }
 }
