@@ -48,7 +48,7 @@ export class UserValidator {
     ];
   }
 
-  static verify() {
+  static verifyEmailToken() {
     return [body('verification_token', 'Email verification token is required').isNumeric()];
   }
 
@@ -111,6 +111,29 @@ export class UserValidator {
             throw new Error('Reset password token is invalid. Please try again');
           }
         })
+    ];
+  }
+
+  static verifyPhone() {
+    return [body('phone', 'phone number is required').isString()];
+  }
+
+  static verifyUserProfile() {
+    return [
+      body('phone', 'Phone is required').isString(),
+      body('email', 'Email is required').isEmail()
+        .custom((email, {req}) => {
+          return User.findOne({email: email}).then((user) => {
+            if (user) {
+              throw ('A user with entered email already exist, please provide a unique email id');
+            } else {
+              return true;
+            }
+          }).catch(e => {
+            throw new Error(e);
+          });
+        }),
+      body('password', 'password is required').isAlphanumeric()
     ];
   }
 }

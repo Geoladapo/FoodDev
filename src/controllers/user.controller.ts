@@ -66,7 +66,7 @@ export class UserController {
     res.send(req.user);
   }
 
-  static async verify(req, res, next) {
+  static async verifyUserEmailToken(req, res, next) {
     const {verification_token} = req.body;
     const {email} = req.user;
     try {
@@ -158,8 +158,8 @@ export class UserController {
     const {new_password} = req.body;
     try {
       const encryptedPassword = await Utils.encryptPassword(new_password);
-      const updatedUser = await User.findOneAndUpdate(
-        {_id: user._id},
+      const updatedUser = await User.findByIdAndUpdate(
+        user._id,
         {
           updated_at: new Date(),
           password: new_password
@@ -172,6 +172,69 @@ export class UserController {
       }
     } catch (error) {
       next(error);
+    }
+  }
+
+  static async profile(req, res, next) {
+    const user = req.user;
+    try {
+      const profile = await User.findById(user._id);
+      if (profile) {
+        res.send(profile);
+      } else {
+        throw new Error('USer doesn\'t exist');
+      }
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  static async updatePhoneNumber(req, res, next) {
+    const user = req.user;
+    const {phone} = req.body;
+    try {
+      const userData = await User.findByIdAndUpdate(user._id, {
+        phone: phone
+      }, {new: true});
+      res.send(userData);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  static async updateUserProfile(req, res, next) {
+    const user = req.user;
+    const {phone, new_email, password} = req.body;
+    const verification_token = Utils.generateVerificationToken();
+
+    try {
+      const userData = await User.findById(user._id);
+
+      if (!userData) throw new Error('User does not exist');
+      await Utils.comparePassword({password: password, encrypt_password: userData.password});
+
+      const updatedUser = await User.findByIdAndUpdate(user._id, {
+        phone: phone,
+        email: new_email,
+        email_verified: false,
+        verification_token,
+        verification_token_time: Date.now() + new Utils().MAX_TOKEN_TIME,
+        updated_at: Date.now()
+      }, {new: true});
+
+      const payload = {
+        user_id: user._id,
+        email: updatedUser.email
+      }
+      const token = Jwt.jwtSign(payload)
+      res.json({token: token, user: updatedUser})
+      await NodeMailer.sendMail({
+        to: [user.email],
+        subject: 'Resend Email verification',
+        html: `<h1>Your Otp is ${verification_token}</h1>`
+      })
+    } catch (e) {
+      next(e);
     }
   }
 }

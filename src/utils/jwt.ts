@@ -2,6 +2,7 @@ import * as jwt from 'jsonwebtoken';
 import {getEnvironmentVariable} from '../environments/environment';
 
 export class Jwt {
+  // JWT SIGN
   static jwtSign(payload) {
     jwt.sign(
       payload,
@@ -10,6 +11,7 @@ export class Jwt {
     );
   }
 
+  // JWT verify
   static jwtVerify(token: string): Promise<any> {
     return new Promise((resolve, reject) => {
       jwt.verify(token, getEnvironmentVariable().jwt_secret_key, (err, decoded) => {
