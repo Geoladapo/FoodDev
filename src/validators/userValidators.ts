@@ -123,6 +123,7 @@ export class UserValidator {
       body('phone', 'Phone is required').isString(),
       body('email', 'Email is required').isEmail()
         .custom((email, {req}) => {
+          if (req.user.email == email) throw ('please provide a email address to update user profile.');
           return User.findOne({email: email}).then((user) => {
             if (user) {
               throw ('A user with entered email already exist, please provide a unique email id');
